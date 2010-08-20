@@ -1,5 +1,13 @@
 == Requirements
 * [[http://nodejs.org|node.js]] by Ryan Lienhart Dahl and [[http://github.com/ry/node/blob/master/AUTHORS|contributors]] (MIT License)
 
+== Usage
+{{{
+node ttc.js
+}}}
+For more options check the documentation:
+{{{
+node ttc.js --help
+}}}
 == External Libraries
 * [[http://github.com/unscene/node-oauth|node-oauth]] by Ryan Fairchild (MIT License)

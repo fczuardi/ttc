@@ -1,5 +1,6 @@
 - option to output to a file
 - option to print the version number
+- print the trunk head hash as part of the version name/number
 - option to choose the output file format (json, csv, atom_entry)
 - support for custom templates (for the output file)
 - option to hide hashtag results (the API has this option)
