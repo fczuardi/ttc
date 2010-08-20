@@ -57,7 +57,7 @@ printDefaultHeader();
 
 //== Twitter OAuth Config (/config/twitter.js)
 try{
-  var tw_config = require('../config/twitter').tokens;
+  var tw_config = require('./config/twitter').tokens;
   var  consumer = oauth.createConsumer(tw_config.CONSUMER_KEY, tw_config.CONSUMER_SECRET)
       ,token = oauth.createToken(tw_config.OAUTH_TOKEN, tw_config.OAUTH_TOKEN_SECRET)
       ,signer = oauth.createHmac(consumer, token)
