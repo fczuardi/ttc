@@ -2,8 +2,6 @@
 
 //== Libraries
 var  sys = require('sys')
-    ,exec = require('child_process').exec
-    ,spawn = require('child_process').spawn
     ,http = require('http')
     ,oauth = require('./lib/node-oauth/lib/oauth');
 
@@ -12,7 +10,6 @@ var  API_URL = 'api.twitter.com'
     ,API_PORT = 80
     ,API_PORT_SSL = 443
     ,LOCAL_TRENDS_PATH = '/1/trends/'
-    ,MIN_TIME_BETWEEN_TRENDS_REQUESTS = 5*60*1000 // 5 minutes see http://dev.twitter.com/doc/get/trends/:woeid
     ,KNOWN_WOEIDS = {
        '1': 'Worldwide'
       ,'23424768': 'Brazil'
@@ -48,7 +45,7 @@ var  API_URL = 'api.twitter.com'
     }
     ,SCRIPT_NAME = 'Twitter Trending Topics Client'
     ,SCRIPT_VERSION = 'v0.1'
-    ,SCRIPT_SOURCE_CODE_URL = 'http://github.com/fczuardi/ttwiki'
+    ,SCRIPT_SOURCE_CODE_URL = 'http://github.com/fczuardi/ttc'
     ,SCRIPT_TITLE = '\n'+SCRIPT_NAME+' '+SCRIPT_VERSION+
                     '\n-----------------------------------\n';
 
@@ -63,7 +60,6 @@ try{
       ,signer = oauth.createHmac(consumer, token)
       ,client = oauth.createClient(API_PORT_SSL, API_URL , true);
 }catch(e){
-  // printAndExit('Error: You need to setup your Twitter OAuth tokens. Edit the file /config/twitter-example.js and save it as /config/twitter.js\n\n', 1);
   console.log('TIP: You can raise the API calls limit by setting up your Twitter OAuth tokens. Edit the file /config/twitter-example.js and save it as /config/twitter.js\n')
   client = http.createClient(API_PORT, API_URL , false);
 }
@@ -73,25 +69,18 @@ var  response_formats = ['json', 'xml'] //json output sometimes stop working, so
     ,trends_request = {'xml':{},'json':{}}
     ,current_trends = {'xml':{},'json':{}}
     ,last_trends = {'as_of': 0, 'trends': [] }
-    ,json_retrieving_interval
-    ,xml_retrieving_interval
     ,invalid_syntax = false
     ,options_callbacks = [];
 
 //== Default options
-var options = {
-   'run_once' : true
-  ,'woeid' : '1'
-  ,'verbose' : false
-  ,'interval': MIN_TIME_BETWEEN_TRENDS_REQUESTS
-}
+var options = { 'woeid' : '1'}
 
 //= Command Line Options
 valid_arguments = [
    {'name': /^(-h|--help)$/, 'expected': null, 'callback': printHelp}
   ,{'name': /^(-l|--location)$/, 'expected': /^([A-Za-z]{2}|[0-9]+)$/, 'callback': changeLocation}
 ];
-if (process.argv.length <=2) { runOnce(); }
+if (process.argv.length <=2) { main(); }
 for(i=2; i < process.argv.length; i++){
   argument = process.argv[i];
   next_argument = process.argv[i+1];
@@ -177,9 +166,8 @@ function printDefaultHeader(){
 
 //= Functions
 
-//== runOnce()
-function runOnce(){
-  options['run_once'] = true;
+//== main()
+function main(){
   getCurrentTrends('xml');
   // getCurrentTrends('json');
 }
@@ -187,18 +175,7 @@ function runOnce(){
 //== changeLocation()
 function changeLocation(location){
   options.woeid = (KNOWN_COUNTRY_CODES[location])?(KNOWN_COUNTRY_CODES[location]):location;
-  runOnce();
-}
-//== init()
-function init(){
-  //twitter sometimes stops updating the json list (http://twitter.com/fczuardi/status/21353558458)
-  //so we request xml and json alternating and use the most recent list of the two
-  getCurrentTrends('xml');
-  json_retrieving_interval = setInterval(get_current_trends, options['interval'], 'xml');
-  setTimeout(function(){
-    getCurrentTrends('json');
-    json_retrieving_interval = setInterval(get_current_trends, options['interval'], 'json');
-  }, opetions['interval']/2);
+  main();
 }
 
 //== getCurrentTrends()
@@ -289,31 +266,15 @@ function parseTrendsJSON(response){
 
 //== trendsParsed()
 function trendsParsed(content){
-  if (options['run_once']){
-    var as_of_date = new Date(content['as_of']);
-    var output = '';
-    output += 'Trending Topics (as of '+ as_of_date.toLocaleString() +')\nLocation: '+ KNOWN_WOEIDS[options['woeid']] +'\n\n'
-    for (i=0;i<content['trends'].length;i++){
-      output += (i+1) + '. ' + entitiesToChar(content['trends'][i]['name']) + ' - ' + content['trends'][i]['url'] +'\n';
-    }
-    output += '\n('+ content['remaining_calls'] +' API calls remaining)\n\n';
-    printAndExit(output, 0);
-    return true;
+  var as_of_date = new Date(content['as_of']);
+  var output = '';
+  output += 'Trending Topics (as of '+ as_of_date.toLocaleString() +')\nLocation: '+ KNOWN_WOEIDS[options['woeid']] +'\n\n'
+  for (i=0;i<content['trends'].length;i++){
+    output += (i+1) + '. ' + entitiesToChar(content['trends'][i]['name']) + ' - ' + content['trends'][i]['url'] +'\n';
   }
-  console.log(JSON.stringify(content['trends']))
-  var test_script = exec('node post_redisdb_trendlist.js'
-      ,{env: {
-         TRENDS: JSON.stringify(content['trends'])
-        ,AS_OF: content['as_of']
-      }}
-      ,function (error, stdout, stderr) {
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-      console.log(stdout);
-      if (stderr) console.log(stderr);
-    });
-  //
+  output += '\n('+ content['remaining_calls'] +' API calls remaining)\n\n';
+  printAndExit(output, 0);
+  return true;
 }
 
 //= Helpers
