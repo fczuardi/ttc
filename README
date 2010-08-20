@@ -1,0 +1,5 @@
+== Requirements
+* [[http://nodejs.org|node.js]] by Ryan Lienhart Dahl and [[http://github.com/ry/node/blob/master/AUTHORS|contributors]] (MIT License)
+
+== External Libraries
+* [[http://github.com/unscene/node-oauth|node-oauth]] by Ryan Fairchild (MIT License)
