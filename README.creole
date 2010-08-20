@@ -1,3 +1,6 @@
+= Trending Topics Client (for Twitter)
+Command line tool to get trending topics from Twitter.
+
 == Requirements
 * [[http://nodejs.org|node.js]] by Ryan Lienhart Dahl and [[http://github.com/ry/node/blob/master/AUTHORS|contributors]] (MIT License)
 
@@ -9,5 +12,15 @@ For more options check the documentation:
 {{{
 node ttc.js --help
 }}}
-== External Libraries
+
+== Credits, License and External Libraries
+
+Trending Topics Client (for Twitter) is Free Software, developed by 
+Fabricio Zuardi and released under the MIT License.
+
+Trending Topics Client relies on external libraries written by others and 
+the code for those libraries are also included in this distribution 
+(check the /lib folder). Below is a list of those Libraries, their authors and
+the licences used by each:
+
 * [[http://github.com/unscene/node-oauth|node-oauth]] by Ryan Fairchild (MIT License)
