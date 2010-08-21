@@ -27,7 +27,9 @@ THE SOFTWARE.
 //== Libraries
 var  sys = require('sys')
     ,http = require('http')
+    ,arguments = require('./lib/node-arguments')
     ,oauth = require('./lib/node-oauth/lib/oauth');
+    
 
 //== Constants
 var  API_URL = 'api.twitter.com'
@@ -100,41 +102,11 @@ var  response_formats = ['json', 'xml'] //json output sometimes stop working, so
 var options = { 'woeid' : '1'}
 
 //= Command Line Options
-valid_arguments = [
-   {'name': /^(-h|--help)$/, 'expected': null, 'callback': printHelp}
-  ,{'name': /^(-l|--location)$/, 'expected': /^([A-Za-z]{2}|[0-9]+)$/, 'callback': changeLocation}
-];
-if (process.argv.length <=2) { main(); }
-for(i=2; i < process.argv.length; i++){
-  argument = process.argv[i];
-  next_argument = process.argv[i+1];
-  invalid_syntax = true;
-  for (j=0; j<valid_arguments.length; j++){
-    if (valid_arguments[j]['name'].test(argument)){
-      invalid_syntax = false;
-      if (valid_arguments[j]['expected']){
-        //option requires a value, check if the provided match the expected syntax
-        if (!valid_arguments[j]['expected'].test(next_argument)){ 
-          invalidArgument(next_argument ? next_argument : argument, (next_argument==undefined));
-          break;
-        }
-        i++;
-      }
-      if (valid_arguments[j]['callback']) {
-        options_callbacks.push({
-          'callback': valid_arguments[j]['callback']
-          ,'argument': valid_arguments[j]['expected'] ? next_argument : null
-        });
-      }
-      continue;
-    }
-  }
-  if (invalid_syntax) { invalidArgument(argument); break; }
-}
-//execute all options callbacks
-options_callbacks.forEach(function(item){
-  item['callback'](item['argument'])
-});
+arguments.parse([
+     {'name': /^(-h|--help)$/, 'expected': null, 'callback': printHelp}
+    ,{'name': /^(-l|--location)$/, 'expected': /^([A-Za-z]{2}|[0-9]+)$/, 'callback': changeLocation}
+    ,{'name': /^(-o|--output-file)$/, 'expected': /./, 'callback': changeOutput}
+  ], main, invalidArgument);
 
 //== Manual
 function printHelp(){
@@ -194,12 +166,17 @@ function printDefaultHeader(){
 function main(){
   getCurrentTrends('xml');
   // getCurrentTrends('json');
-}
+};
 
 //== changeLocation()
-function changeLocation(location){
+function changeLocation(end, location){
   options.woeid = (KNOWN_COUNTRY_CODES[location])?(KNOWN_COUNTRY_CODES[location]):location;
-  main();
+  end();
+}
+
+function changeOutput(end, file_path){
+  // console.log('changeOutput:'+file_path);
+  end();
 }
 
 //== getCurrentTrends()
@@ -321,11 +298,7 @@ function entitiesToChar(text){
 
 //== invalidArgument()
 function invalidArgument(arg, value_missing){
-  if (value_missing) {
-    printAndExit('Error: the argument '+arg+' requires a value.\n\n');
-  }else{
-    printAndExit('Error: the argument '+arg+' is not valid.\n\n');
-  }
+  console.log('Error: the argument %s %s', arg, (value_missing?'expects a value':'is not valid.'))
 }
 
 //== responseError()
