@@ -1,4 +1,8 @@
-//== Constants
+//= Default Options
+var options = { 'woeid' : '1'}
+
+//= Constants
+this.VERSION = 'v0.1'
 this.API_URL = 'api.twitter.com'
 this.API_PORT = 80
 this.API_PORT_SSL = 443
@@ -37,7 +41,53 @@ this.KNOWN_COUNTRY_CODES = {
       ,'us': '23424977'
     }
 this.SCRIPT_NAME = 'Trending Topics Client (for Twitter)'
-this.SCRIPT_VERSION = 'v0.1'
 this.SCRIPT_SOURCE_CODE_URL = 'http://github.com/fczuardi/ttc'
-this.SCRIPT_TITLE = '\n'+this.SCRIPT_NAME+' '+this.SCRIPT_VERSION+
+this.SCRIPT_TITLE = '\n'+this.SCRIPT_NAME+' '+this.VERSION+
                     '\n-----------------------------------\n';
+
+var  country_codes = [], woeids = [];
+for(code in this.KNOWN_COUNTRY_CODES){
+  country_codes.push(code +' - '+this.KNOWN_WOEIDS[this.KNOWN_COUNTRY_CODES[code]]);
+}
+for(woeid in this.KNOWN_WOEIDS){
+  woeids.push(woeid +' - '+this.KNOWN_WOEIDS[woeid]);
+}
+
+this.HELP_TEXT = '\
+Usage:\
+\n\tnode '+ __filename.substring(__dirname.length+1, __filename.length) +' [option value] [option value]…\
+\n\
+\nOptions:\
+\n\t-h/--help:\
+\n\t\tPrint this help page and exit.\
+\n\
+\n\t-l/--location:\
+\n\t\tTwo letter country code or the woeid code for the location you want. Default value: '+options.woeid+'.\
+\n\
+\n\t\tThe currently supported country codes are:\n\t\t\t'+ country_codes.join('\n\t\t\t') +'\
+\n\
+\n\t\tSome known woeid codes:\n\t\t\t'+ woeids.join('\n\t\t\t') +'\
+\n\
+\n\t\tFor an up-to-date list of locations provided by Twitter, access:\
+\n\t\t\tcurl http://api.twitter.com/1/trends/available.xml\
+\n\
+\n\t-o/--output-file:\
+\n\t\tThe path for the output file. Defaults to stdout.\
+\n\
+\n\t--version:\
+\n\t\tPrint the software version and exit.\
+\n\
+\nAuthor:\
+\n\tFabricio Campos Zuardi\
+\n\tTwitter: @fczuardi\
+\n\tWebsite: http://fabricio.org\
+\n\
+\nContributions:\
+\n\t'+this.SCRIPT_NAME+' is a Free Software released under the MIT License, which\
+\n\tmeans that you are welcome to copy, study and modify this software and, why not,\
+\n\teven contribute with improvements and bug fixes!\
+\n\
+\n\tThe code is hosted at '+this.SCRIPT_SOURCE_CODE_URL+'\
+\n\
+\nThanks for using it! :)\
+\n\n';

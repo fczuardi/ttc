@@ -31,8 +31,12 @@ var  sys = require('sys')
     ,oauth = require('./lib/node-oauth/lib/oauth')
     ,config = require('./config/setup');
 
-//== Header
-printDefaultHeader();
+//== Variables
+var  response_formats = ['json', 'xml'] //json output sometimes stop working, so we check both
+    ,trends_request = {'xml':{},'json':{}}
+    ,current_trends = {'xml':{},'json':{}}
+    ,last_trends = {'as_of': 0, 'trends': [] }
+    ,options = config.options;
 
 //== Twitter OAuth Config (/config/twitter.js)
 try{
@@ -46,83 +50,24 @@ try{
   client = http.createClient(config.API_PORT, config.API_URL , false);
 }
 
-//== Variables
-var  response_formats = ['json', 'xml'] //json output sometimes stop working, so we check both
-    ,trends_request = {'xml':{},'json':{}}
-    ,current_trends = {'xml':{},'json':{}}
-    ,last_trends = {'as_of': 0, 'trends': [] }
-    ,invalid_syntax = false
-    ,options_callbacks = [];
-
-//== Default options
-var options = { 'woeid' : '1'}
-
 //= Command Line Options
 arguments.parse([
      {'name': /^(-h|--help)$/, 'expected': null, 'callback': printHelp}
+    ,{'name': /^(--version)$/, 'expected': null, 'callback': printVersion}
     ,{'name': /^(-l|--location)$/, 'expected': /^([A-Za-z]{2}|[0-9]+)$/, 'callback': changeLocation}
     ,{'name': /^(-o|--output-file)$/, 'expected': /./, 'callback': changeOutput}
   ], main, invalidArgument);
 
-//== Manual
+//== printHelp()
 function printHelp(){
-  var country_codes = [];
-  for(code in config.KNOWN_COUNTRY_CODES){
-    country_codes.push(code +' - '+config.KNOWN_WOEIDS[config.KNOWN_COUNTRY_CODES[code]]);
-  }
-  var woeids = [];
-  for(woeid in config.KNOWN_WOEIDS){
-    woeids.push(woeid +' - '+config.KNOWN_WOEIDS[woeid]);
-  }
-  var help_text = '\
-Usage:\
-\n\tnode '+ __filename.substring(__dirname.length+1, __filename.length) +' [option value] [option value]…\
-\n\
-\nOptions:\
-\n\t-l/--location:\
-\n\t\tDefault value: '+options['woeid']+'\
-\n\t\tTwo letter country code or the woeid code for the location you want.\
-\n\
-\n\t\tThe currently supported country codes are:\n\t\t\t'+ country_codes.join('\n\t\t\t') +'\
-\n\
-\n\t\tSome known woeid codes:\n\t\t\t'+ woeids.join('\n\t\t\t') +'\
-\n\
-\n\t\tFor an up-to-date list of locations provided by Twitter, access:\
-\n\t\t\tcurl http://api.twitter.com/1/trends/available.xml\
-\n\
-\nAuthor:\
-\n\tFabricio Campos Zuardi\
-\n\tTwitter: @fczuardi\
-\n\tWebsite: http://fabricio.org\
-\n\
-\nContributions:\
-\n\t'+config.SCRIPT_NAME+' is a Free Software released under the MIT License, which\
-\n\tmeans that you are welcome to copy, study and modify this software and, why not,\
-\n\teven contribute with improvements and bug fixes!\
-\n\
-\n\tThe code is hosted at '+config.SCRIPT_SOURCE_CODE_URL+'\
-\n\
-\nThanks for using it! :)\
-\n\n';
-   
-  printAndExit(help_text, 0);
+  printDefaultHeader();
+  printAndExit(config.HELP_TEXT, 0);
 }
 
-//== Default Header
-function printDefaultHeader(){
-  console.log(config.SCRIPT_TITLE);
-  if (process.argv.length == 2){
-    console.log('Check the HELP page: node '+ __filename.substring(__dirname.length+1, __filename.length) +' -h\n');
-  }
+//== printVersion()
+function printVersion(){
+  printAndExit(config.VERSION+'\n', 0);
 }
-
-//= Functions
-
-//== main()
-function main(){
-  getCurrentTrends('xml');
-  // getCurrentTrends('json');
-};
 
 //== changeLocation()
 function changeLocation(end, location){
@@ -133,6 +78,23 @@ function changeLocation(end, location){
 function changeOutput(end, file_path){
   // console.log('changeOutput:'+file_path);
   end();
+}
+
+//= Main
+function main(){
+  printDefaultHeader();
+  getCurrentTrends('xml');
+  // getCurrentTrends('json');
+};
+
+//= Functions
+
+//== printDefaultHeader()
+function printDefaultHeader(){
+  console.log(config.SCRIPT_TITLE);
+  if (process.argv.length == 2){
+    console.log('Check the HELP page: node '+ __filename.substring(__dirname.length+1, __filename.length) +' -h\n');
+  }
 }
 
 //== getCurrentTrends()
