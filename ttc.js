@@ -28,52 +28,8 @@ THE SOFTWARE.
 var  sys = require('sys')
     ,http = require('http')
     ,arguments = require('./lib/node-arguments')
-    ,oauth = require('./lib/node-oauth/lib/oauth');
-    
-
-//== Constants
-var  API_URL = 'api.twitter.com'
-    ,API_PORT = 80
-    ,API_PORT_SSL = 443
-    ,LOCAL_TRENDS_PATH = '/1/trends/'
-    ,KNOWN_WOEIDS = {
-       '1': 'Worldwide'
-      ,'23424768': 'Brazil'
-      ,'23424977': 'United States'
-      ,'23424975': 'United Kingdom'
-      ,'23424900': 'Mexico'
-      ,'23424803': 'Ireland'
-      ,'23424775': 'Canada'
-      ,'2358820': 'Baltimore, United States'
-      ,'2367105': 'Boston, United States'
-      ,'2514815': 'Washington, United States'
-      ,'2459115': 'New York, United States'
-      ,'2487796': 'San Antonio, United States'
-      ,'2379574': 'Chicago, United States'
-      ,'2471217': 'Philadelphia, United States'
-      ,'2487956': 'San Francisco, United States'
-      ,'2442047': 'Los Angeles, United States'
-      ,'2424766': 'Houston, United States'
-      ,'2357024': 'Atlanta, United States'
-      ,'2406080': 'Fort Worth, United States'
-      ,'2388929': 'Dallas, United States'
-      ,'2490383': 'Seattle, United States'
-      ,'455827': 'São Paulo, Brazil'
-      ,'44418': 'London, United Kingdom'
-    }
-    ,KNOWN_COUNTRY_CODES = {
-       'br': '23424768'
-      ,'ca': '23424775'
-      ,'gb': '23424975'
-      ,'ie': '23424803'
-      ,'mx': '23424900'
-      ,'us': '23424977'
-    }
-    ,SCRIPT_NAME = 'Trending Topics Client (for Twitter)'
-    ,SCRIPT_VERSION = 'v0.1'
-    ,SCRIPT_SOURCE_CODE_URL = 'http://github.com/fczuardi/ttc'
-    ,SCRIPT_TITLE = '\n'+SCRIPT_NAME+' '+SCRIPT_VERSION+
-                    '\n-----------------------------------\n';
+    ,oauth = require('./lib/node-oauth/lib/oauth')
+    ,config = require('./config/setup');
 
 //== Header
 printDefaultHeader();
@@ -84,10 +40,10 @@ try{
   var  consumer = oauth.createConsumer(tw_config.CONSUMER_KEY, tw_config.CONSUMER_SECRET)
       ,token = oauth.createToken(tw_config.OAUTH_TOKEN, tw_config.OAUTH_TOKEN_SECRET)
       ,signer = oauth.createHmac(consumer, token)
-      ,client = oauth.createClient(API_PORT_SSL, API_URL , true);
+      ,client = oauth.createClient(config.API_PORT_SSL, config.API_URL , true);
 }catch(e){
   console.log('TIP: You can raise the API calls limit by setting up your Twitter OAuth tokens. Edit the file /config/twitter-example.js and save it as /config/twitter.js\n')
-  client = http.createClient(API_PORT, API_URL , false);
+  client = http.createClient(config.API_PORT, config.API_URL , false);
 }
 
 //== Variables
@@ -111,12 +67,12 @@ arguments.parse([
 //== Manual
 function printHelp(){
   var country_codes = [];
-  for(code in KNOWN_COUNTRY_CODES){
-    country_codes.push(code +' - '+KNOWN_WOEIDS[KNOWN_COUNTRY_CODES[code]]);
+  for(code in config.KNOWN_COUNTRY_CODES){
+    country_codes.push(code +' - '+config.KNOWN_WOEIDS[config.KNOWN_COUNTRY_CODES[code]]);
   }
   var woeids = [];
-  for(woeid in KNOWN_WOEIDS){
-    woeids.push(woeid +' - '+KNOWN_WOEIDS[woeid]);
+  for(woeid in config.KNOWN_WOEIDS){
+    woeids.push(woeid +' - '+config.KNOWN_WOEIDS[woeid]);
   }
   var help_text = '\
 Usage:\
@@ -140,11 +96,11 @@ Usage:\
 \n\tWebsite: http://fabricio.org\
 \n\
 \nContributions:\
-\n\t'+SCRIPT_NAME+' is a Free Software released under the MIT License, which\
+\n\t'+config.SCRIPT_NAME+' is a Free Software released under the MIT License, which\
 \n\tmeans that you are welcome to copy, study and modify this software and, why not,\
 \n\teven contribute with improvements and bug fixes!\
 \n\
-\n\tThe code is hosted at '+SCRIPT_SOURCE_CODE_URL+'\
+\n\tThe code is hosted at '+config.SCRIPT_SOURCE_CODE_URL+'\
 \n\
 \nThanks for using it! :)\
 \n\n';
@@ -154,7 +110,7 @@ Usage:\
 
 //== Default Header
 function printDefaultHeader(){
-  console.log(SCRIPT_TITLE);
+  console.log(config.SCRIPT_TITLE);
   if (process.argv.length == 2){
     console.log('Check the HELP page: node '+ __filename.substring(__dirname.length+1, __filename.length) +' -h\n');
   }
@@ -170,7 +126,7 @@ function main(){
 
 //== changeLocation()
 function changeLocation(end, location){
-  options.woeid = (KNOWN_COUNTRY_CODES[location])?(KNOWN_COUNTRY_CODES[location]):location;
+  options.woeid = (config.KNOWN_COUNTRY_CODES[location])?(config.KNOWN_COUNTRY_CODES[location]):location;
   end();
 }
 
@@ -183,9 +139,9 @@ function changeOutput(end, file_path){
 function getCurrentTrends(fmt){
   current_trends[fmt] = {'as_of': 0, 'body': '', 'remaining_calls': 0, 'trends': []}
   if (tw_config){
-    trends_request[fmt] = client.request('GET', LOCAL_TRENDS_PATH + options['woeid'] + '.' + fmt, null, null, signer);
+    trends_request[fmt] = client.request('GET', config.LOCAL_TRENDS_PATH + options['woeid'] + '.' + fmt, null, null, signer);
   } else {
-    trends_request[fmt] = client.request('GET', LOCAL_TRENDS_PATH + options['woeid'] + '.' + fmt, {'host': API_URL});
+    trends_request[fmt] = client.request('GET', config.LOCAL_TRENDS_PATH + options['woeid'] + '.' + fmt, {'host': config.API_URL});
   }
   trends_request[fmt].addListener('response', function(response) {
     var response_type = (response.headers['content-type'].indexOf('xml') != -1) ? 'xml' :
@@ -269,7 +225,7 @@ function parseTrendsJSON(response){
 function trendsParsed(content){
   var as_of_date = new Date(content['as_of']);
   var output = '';
-  output += 'Trending Topics (as of '+ as_of_date.toLocaleString() +')\nLocation: '+ KNOWN_WOEIDS[options['woeid']] +'\n\n'
+  output += 'Trending Topics (as of '+ as_of_date.toLocaleString() +')\nLocation: '+ config.KNOWN_WOEIDS[options['woeid']] +'\n\n'
   for (i=0;i<content['trends'].length;i++){
     output += (i+1) + '. ' + entitiesToChar(content['trends'][i]['name']) + ' - ' + content['trends'][i]['url'] +'\n';
   }

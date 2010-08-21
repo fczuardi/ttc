@@ -4,5 +4,4 @@
 - option to choose the output file format (json, csv, atom_entry)
 - support for custom templates (for the output file)
 - option to hide hashtag results (the API has this option)
-- move KNOWN_WOEIDS and KNOWN_COUNTRY_CODES to a preference file
 - try to simplify how the script is called ($ttc instead of $node ttc.js)
