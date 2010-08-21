@@ -1,5 +1,5 @@
 //= Default Options
-var options = { 'woeid' : '1'}
+this.options = { 'woeid' : '1'}
 
 //= Constants
 this.VERSION = 'v0.1'
@@ -42,8 +42,8 @@ this.KNOWN_COUNTRY_CODES = {
     }
 this.SCRIPT_NAME = 'Trending Topics Client (for Twitter)'
 this.SCRIPT_SOURCE_CODE_URL = 'http://github.com/fczuardi/ttc'
-this.SCRIPT_TITLE = '\n'+this.SCRIPT_NAME+' '+this.VERSION+
-                    '\n-----------------------------------\n';
+this.SCRIPT_TITLE = '\n'+this.SCRIPT_NAME+
+                    '\n-------------------------------\n';
 
 var  country_codes = [], woeids = [];
 for(code in this.KNOWN_COUNTRY_CODES){
@@ -62,7 +62,7 @@ Usage:\
 \n\t\tPrint this help page and exit.\
 \n\
 \n\t-l/--location:\
-\n\t\tTwo letter country code or the woeid code for the location you want. Default value: '+options.woeid+'.\
+\n\t\tTwo letter country code or the woeid code for the location you want. Default value: '+this.options.woeid+'.\
 \n\
 \n\t\tThe currently supported country codes are:\n\t\t\t'+ country_codes.join('\n\t\t\t') +'\
 \n\

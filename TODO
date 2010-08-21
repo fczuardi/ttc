@@ -1,7 +1,11 @@
 v0.1
-- option to output to a file
-- option to choose the output file format (json, csv, atom_entry)
+- option to display the url
 - option to hide hashtag results (the API has this option)
+- option to output to a file
+- option to choose the output file format (json, csv, atom_entry, html-ol)
+
+v0.1 (extra)
+- announce on twitter and maybe blog
 
 v.0.2
 - repeat-every (minutes) option to run it in loop

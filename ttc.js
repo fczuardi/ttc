@@ -46,7 +46,7 @@ try{
       ,signer = oauth.createHmac(consumer, token)
       ,client = oauth.createClient(config.API_PORT_SSL, config.API_URL , true);
 }catch(e){
-  console.log('TIP: You can raise the API calls limit by setting up your Twitter OAuth tokens. Edit the file /config/twitter-example.js and save it as /config/twitter.js\n')
+  // console.log('TIP: You can raise the API calls limit by setting up your Twitter OAuth tokens. Edit the file /config/twitter-example.js and save it as /config/twitter.js\n')
   client = http.createClient(config.API_PORT, config.API_URL , false);
 }
 
@@ -82,7 +82,7 @@ function changeOutput(end, file_path){
 
 //= Main
 function main(){
-  printDefaultHeader();
+  // printDefaultHeader();
   getCurrentTrends('xml');
   // getCurrentTrends('json');
 };
@@ -187,11 +187,17 @@ function parseTrendsJSON(response){
 function trendsParsed(content){
   var as_of_date = new Date(content['as_of']);
   var output = '';
-  output += 'Trending Topics (as of '+ as_of_date.toLocaleString() +')\nLocation: '+ config.KNOWN_WOEIDS[options['woeid']] +'\n\n'
+  output += '\n';
   for (i=0;i<content['trends'].length;i++){
-    output += (i+1) + '. ' + entitiesToChar(content['trends'][i]['name']) + ' - ' + content['trends'][i]['url'] +'\n';
+    output += (i+1) + '. ' + entitiesToChar(content['trends'][i]['name']);
+    // output += ' - ' + content['trends'][i]['url'];
+    output += '\n';
   }
-  output += '\n('+ content['remaining_calls'] +' API calls remaining)\n\n';
+  output += '\n';
+  output += 'Location: '+ config.KNOWN_WOEIDS[options['woeid']]+'\n'
+  output += 'Time: '+as_of_date.toLocaleString() +')\n'
+  output += 'API calls remaining: '+content['remaining_calls']+'\n';
+  output += '\n';
   printAndExit(output, 0);
   return true;
 }
