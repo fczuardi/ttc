@@ -32,8 +32,7 @@ var  sys = require('sys')
     ,config = require('./config/setup');
 
 //== Variables
-var  response_formats = ['json', 'xml'] //json output sometimes stop working, so we check both
-    ,trends_request = {'xml':{},'json':{}}
+var  trends_request = {'xml':{},'json':{}}
     ,current_trends = {'xml':{},'json':{}}
     ,last_trends = {'as_of': 0, 'trends': [] }
     ,options = config.options;
