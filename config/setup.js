@@ -55,7 +55,7 @@ for(woeid in this.KNOWN_WOEIDS){
 
 this.HELP_TEXT = '\
 Usage:\
-\n\tnode '+ __filename.substring(__dirname.length+1, __filename.length) +' [option value] [option value]…\
+\n\tnode ttc.js [option value] [option value]…\
 \n\
 \nOptions:\
 \n\t-h/--help:\
