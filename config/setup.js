@@ -1,5 +1,8 @@
 //= Default Options
-this.options = { 'woeid' : '1'}
+this.options = { 
+   'woeid': '1'
+  ,'output_format': 'normal'
+}
 
 //= Constants
 this.VERSION = 'v0.1'
@@ -44,22 +47,38 @@ this.SCRIPT_NAME = 'Trending Topics Client (for Twitter)'
 this.SCRIPT_SOURCE_CODE_URL = 'http://github.com/fczuardi/ttc'
 this.SCRIPT_TITLE = '\n'+this.SCRIPT_NAME+
                     '\n-------------------------------\n';
+this.KNOWN_FORMATS = [
+   {'name': 'normal', 'description': 'Complete and pretty text output.'}
+  ,{'name': 'names', 'description': 'Just the name of the topics in order. One by line, nothing else.'}
+  ,{'name': 'json', 'description': 'The list in JSON format. With name and search URL for each topic, plus the time and location for the results.'}
+];
 
-var  country_codes = [], woeids = [];
+var  country_codes = [], woeids = [], output_formats = [];
 for(code in this.KNOWN_COUNTRY_CODES){
   country_codes.push(code +' - '+this.KNOWN_WOEIDS[this.KNOWN_COUNTRY_CODES[code]]);
 }
 for(woeid in this.KNOWN_WOEIDS){
   woeids.push(woeid +' - '+this.KNOWN_WOEIDS[woeid]);
 }
+this.KNOWN_FORMATS.forEach(function(format){
+  output_formats.push(format['name'] +' - '+ format['description']);
+});
 
 this.HELP_TEXT = '\
-Usage:\
+Description:\
+\nGet the latest local trending topics list for a location from Twitter and prints it on the standard output.\
+\n\
+\nUsage:\
 \n\tnode ttc.js [option value] [option value]…\
 \n\
 \nOptions:\
 \n\t-h/--help:\
 \n\t\tPrint this help page and exit.\
+\n\
+\n\t-f/--format:\
+\n\t\tThe output format for the list. Default value: '+this.options.output_format+'.\
+\n\
+\n\t\tThe currently supported formats are:\n\t\t\t'+ output_formats.join('\n\t\t\t') +'\
 \n\
 \n\t-l/--location:\
 \n\t\tTwo letter country code or the woeid code for the location you want. Default value: '+this.options.woeid+'.\
@@ -70,9 +89,6 @@ Usage:\
 \n\
 \n\t\tFor an up-to-date list of locations provided by Twitter, access:\
 \n\t\t\tcurl http://api.twitter.com/1/trends/available.xml\
-\n\
-\n\t-o/--output-file:\
-\n\t\tThe path for the output file. Defaults to stdout.\
 \n\
 \n\t--version:\
 \n\t\tPrint the software version and exit.\

@@ -46,7 +46,6 @@ try{
       ,signer = oauth.createHmac(consumer, token)
       ,client = oauth.createClient(config.API_PORT_SSL, config.API_URL , true);
 }catch(e){
-  // console.log('TIP: You can raise the API calls limit by setting up your Twitter OAuth tokens. Edit the file /config/twitter-example.js and save it as /config/twitter.js\n')
   client = http.createClient(config.API_PORT, config.API_URL , false);
 }
 
@@ -55,7 +54,7 @@ arguments.parse([
      {'name': /^(-h|--help)$/, 'expected': null, 'callback': printHelp}
     ,{'name': /^(--version)$/, 'expected': null, 'callback': printVersion}
     ,{'name': /^(-l|--location)$/, 'expected': /^([A-Za-z]{2}|[0-9]+)$/, 'callback': changeLocation}
-    ,{'name': /^(-o|--output-file)$/, 'expected': /./, 'callback': changeOutput}
+    ,{'name': /^(-f|--format)$/, 'expected': /^(normal|names|json|debug)$/, 'callback': changeFormat}
   ], main, invalidArgument);
 
 //== printHelp()
@@ -71,18 +70,24 @@ function printVersion(){
 
 //== changeLocation()
 function changeLocation(end, location){
-  options.woeid = (config.KNOWN_COUNTRY_CODES[location])?(config.KNOWN_COUNTRY_CODES[location]):location;
+  var l = location.toLowerCase();
+  if ((l.match(/^([A-Za-z]{2})$/)) && (!config.KNOWN_COUNTRY_CODES[l])) { 
+    invalidArgument(location, false);
+    return false
+  };
+  options.woeid = (config.KNOWN_COUNTRY_CODES[l])?(config.KNOWN_COUNTRY_CODES[l]):location;
   end();
 }
 
-function changeOutput(end, file_path){
-  // console.log('changeOutput:'+file_path);
+//== changeFormat()
+function changeFormat(end, fmt){
+  options.output_format = fmt;
   end();
 }
 
 //= Main
 function main(){
-  // printDefaultHeader();
+  if (config.options.output_format.match(/^(normal|debug)$/)) { printDefaultHeader();}
   getCurrentTrends('xml');
   // getCurrentTrends('json');
 };
@@ -110,8 +115,8 @@ function getCurrentTrends(fmt){
                         ((response.headers['content-type'].indexOf('json') != -1) ? 'json' : 'other')
     response.setEncoding('utf8');
     // error handling
-    if (response.statusCode != 200) { return responseError(response, 'error', 'Request failed.', '8309740116819739'); }
-    if (response.headers["x-ratelimit-remaining"] < 100) { responseError(response, 'warning', 'We are reaching the limit!!', ('7925415213685483')) }
+    if (response.statusCode != 200) { return responseError(response, 'error', 'Request failed. Time:'+(new Date().toLocaleString()), '8309740116819739'); }
+    if (response.headers["x-ratelimit-remaining"] < 20) { responseError(response, 'warning', 'We are reaching the limit!!', ('7925415213685483')) }
     if (response_type == 'other') { return responseError(response, 'error', 'Wrong MIME Type.', '20324136363342404'); }
     current_trends[fmt]['remaining_calls'] = response.headers["x-ratelimit-remaining"];
     // what to do when data comes in
@@ -134,7 +139,9 @@ function parseTrendsXML(response) {
     var as_of_matches = as_of_re.exec(current_trends['xml']['body']);
     var as_of = Date.parse(as_of_matches[1]);
     if (as_of <= last_trends['as_of']){ 
-      console.log(as_of+' so skip');
+      if (config.options.output_format.match(/^(debug)$/)) { 
+        console.log(as_of+' so skip');
+      }
       return false
     }
     //<trend query="Ursinhos+Carinhosos" url="http://search.twitter.com/search?q=Ursinhos+Carinhosos">Ursinhos Carinhosos</trend>
@@ -187,16 +194,28 @@ function parseTrendsJSON(response){
 function trendsParsed(content){
   var as_of_date = new Date(content['as_of']);
   var output = '';
-  output += '\n';
-  for (i=0;i<content['trends'].length;i++){
-    output += (i+1) + '. ' + entitiesToChar(content['trends'][i]['name']);
-    // output += ' - ' + content['trends'][i]['url'];
-    output += '\n';
+  var fmt = config.options.output_format;
+  var normal_or_debug = fmt.match(/^(normal|debug)$/);
+  switch (fmt){
+    case 'json':
+      delete content['body'];
+      output = JSON.stringify(content);
+      break;
+    default:
+      // output += normal_or_debug?('\n'):'';
+      for (i=0;i<content['trends'].length;i++){
+        output += normal_or_debug?((i+1) + '. '):'';
+        output += entitiesToChar(content['trends'][i]['name']);
+        output += normal_or_debug?(' - ' + content['trends'][i]['url']):'';
+        output += '\n';
+      }
+      if (normal_or_debug){
+        output += '\n';
+        output += 'Location: '+ config.KNOWN_WOEIDS[options['woeid']]+'\n'
+        output += 'Time: '+as_of_date.toLocaleString() +')\n'
+        output += 'API calls remaining: '+content['remaining_calls']+'\n';
+      }
   }
-  output += '\n';
-  output += 'Location: '+ config.KNOWN_WOEIDS[options['woeid']]+'\n'
-  output += 'Time: '+as_of_date.toLocaleString() +')\n'
-  output += 'API calls remaining: '+content['remaining_calls']+'\n';
   output += '\n';
   printAndExit(output, 0);
   return true;
@@ -222,22 +241,30 @@ function entitiesToChar(text){
 
 //== invalidArgument()
 function invalidArgument(arg, value_missing){
-  console.log('Error: the argument %s %s', arg, (value_missing?'expects a value':'is not valid.'))
+  printAndExit('Error: the argument '+arg+' '+(value_missing?'expects a value':'is not valid.')+'\n', 1);
 }
 
 //== responseError()
 function responseError(response, type, msg, code){
-  console.log('== %s: %s (%s) ==', type.toUpperCase(), msg, code);
-  console.log(response.statusCode);
-  console.log(response.headers);
+  var output = '== '+type.toUpperCase()+': '+msg+' ('+code+') ==';
+  output += '\n\n'+response.statusCode;
+  output += '\n\n'+JSON.stringify(response.headers)+'\n';
+  if (type == 'error'){
+    printAndExit(output, 1);
+  } else {
+    if (config.options.output_format.match(/^(debug|normal)$/)){
+      console.log(output);
+    }
+  }
   return false;
 }
 
 //== responseContentError()
 function responseContentError(result, type, msg, code){
-  console.log('== %s: %s (%s) ==', type.toUpperCase(), msg, code);
+  var output = '== '+type.toUpperCase()+': '+msg+' ('+code+') ==\n'
   if (type == 'error') {
-    console.log(result);
+    output += result+'\n'
   }
+  printAndExit(output, 1);
   return false;
 }

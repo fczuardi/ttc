@@ -1,17 +1,20 @@
-v0.1
-- option to display the url
-- option to hide hashtag results (the API has this option)
-- option to output to a file
-- option to choose the output file format (json, csv, atom_entry, html-ol)
-
 v0.1 (extra)
+- examples wiki page
+-- Just the top term
+--- node ttc.js|head -n 3|grep "1. "
+-- Compare Brazil and São Paulo side by side
+--- mkfifo pipe1 pipe2;node ttc.js -l br > pipe1 & node ttc.js -l 455827 > pipe2 & diff -y pipe1 pipe2
+-- What Brazil and São Paulo have in common
+--- node ttc.js -l br > pipe1 & node ttc.js -l 455827 > pipe2 & perl -ne 'print if ($seen{$_} .= @ARGV) =~ /10$/'  pipe1 pipe2
+---- credit: http://www.cyberciti.biz/faq/command-to-display-lines-common-in-files/
+--- node ttc.js -l br > pipe1 & node ttc.js -l 455827 > pipe2 & comm -12 pipe2 pipe1
+-- Notification
+--- ttc | grownofity
 - announce on twitter and maybe blog
 
-v.0.2
-- repeat-every (minutes) option to run it in loop
-- option to append the file instead of replacing
-
 Future
+? repeat-every (minutes) option to run it in loop
 - print the trunk head hash as part of the version name/number
 - support for custom templates (for the output file)
 - try to simplify how the script is called ($ttc instead of $node ttc.js)
+? option to output to a file
