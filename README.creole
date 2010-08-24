@@ -23,6 +23,9 @@ For more options check the documentation:
 node ttc.js --help
 }}}
 
+=== Examples combining Trending Topics Client and other command line tools
+See how to do several things on http://github.com/fczuardi/ttc/wiki/Usage-examples
+
 === TIP
 You can raise the API calls limit by setting up your Twitter OAuth tokens. Edit the file /config/twitter-example.js and save it as /config/twitter.js
 
