@@ -39,3 +39,4 @@ the code for those libraries are also included in this distribution
 
 * [[http://github.com/unscene/node-oauth|node-oauth]] by Ryan Fairchild (MIT License)
 * [[http://github.com/fczuardi/node-arguments|node-arguments]] by Fabricio Zuardi (MIT License)
+* [[http://github.com/fczuardi/node-twitter|node-twitter]] by Fabricio Zuardi (MIT License)
