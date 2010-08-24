@@ -1,0 +1,66 @@
+{ created_at: '2010-08-24T00:31:30Z'
+, as_of: '2010-08-24T00:51:55Z'
+, locations: [ { woeid: 23424768, name: 'Brazil' } ]
+, trends: 
+   [ { query: 'Sauda%C3%A7%C3%B5es+Corinthianas'
+     , events: null
+     , promoted_content: null
+     , name: 'Sauda\u00e7\u00f5es Corinthianas'
+     , url: 'http://search.twitter.com/search?q=Sauda%C3%A7%C3%B5es+Corinthianas'
+     }
+   , { query: 'Geisy+Arruda'
+     , events: null
+     , promoted_content: null
+     , name: 'Geisy Arruda'
+     , url: 'http://search.twitter.com/search?q=Geisy+Arruda'
+     }
+   , { query: 'Deputado+Estadual'
+     , events: null
+     , promoted_content: null
+     , name: 'Deputado Estadual'
+     , url: 'http://search.twitter.com/search?q=Deputado+Estadual'
+     }
+   , { query: 'Mariah+Carey'
+     , events: null
+     , promoted_content: null
+     , name: 'Mariah Carey'
+     , url: 'http://search.twitter.com/search?q=Mariah+Carey'
+     }
+   , { query: 'Twitter+BFFs'
+     , events: null
+     , promoted_content: null
+     , name: 'Twitter BFFs'
+     , url: 'http://search.twitter.com/search?q=Twitter+BFFs'
+     }
+   , { query: 'Horario+Politico'
+     , events: null
+     , promoted_content: null
+     , name: 'Horario Politico'
+     , url: 'http://search.twitter.com/search?q=Horario+Politico'
+     }
+   , { query: 'Felipe+Neto'
+     , events: null
+     , promoted_content: null
+     , name: 'Felipe Neto'
+     , url: 'http://search.twitter.com/search?q=Felipe+Neto'
+     }
+   , { query: 'Tiririca'
+     , events: null
+     , promoted_content: null
+     , name: 'Tiririca'
+     , url: 'http://search.twitter.com/search?q=Tiririca'
+     }
+   , { query: 'Ficha+Limpa'
+     , events: null
+     , promoted_content: null
+     , name: 'Ficha Limpa'
+     , url: 'http://search.twitter.com/search?q=Ficha+Limpa'
+     }
+   , { query: 'Soul+Sister'
+     , events: null
+     , promoted_content: null
+     , name: 'Soul Sister'
+     , url: 'http://search.twitter.com/search?q=Soul+Sister'
+     }
+   ]
+}

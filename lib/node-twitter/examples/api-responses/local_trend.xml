@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<matching_trends type="array">
+  <trends created_at="2010-08-24T01:11:31Z" as_of="2010-08-24T01:19:12Z">
+    <locations>
+      <location>
+        <woeid>23424768</woeid>
+        <name>Brazil</name>
+      </location>
+    </locations>
+    <trend query="Geisy+Arruda" url="http://search.twitter.com/search?q=Geisy+Arruda">Geisy Arruda</trend>
+    <trend query="Sauda%C3%A7%C3%B5es+Corinthianas" url="http://search.twitter.com/search?q=Sauda%C3%A7%C3%B5es+Corinthianas">Sauda&#231;&#245;es Corinthianas</trend>
+    <trend query="Democrata+Crist%C3%A3o" url="http://search.twitter.com/search?q=Democrata+Crist%C3%A3o">Democrata Crist&#227;o</trend>
+    <trend query="Mariana+Ximenes" url="http://search.twitter.com/search?q=Mariana+Ximenes">Mariana Ximenes</trend>
+    <trend query="Fernanda+Montenegro" url="http://search.twitter.com/search?q=Fernanda+Montenegro">Fernanda Montenegro</trend>
+    <trend query="Mariah+Carey" url="http://search.twitter.com/search?q=Mariah+Carey">Mariah Carey</trend>
+    <trend query="Twitter+BFFs" url="http://search.twitter.com/search?q=Twitter+BFFs">Twitter BFFs</trend>
+    <trend query="Deputado+Federal" url="http://search.twitter.com/search?q=Deputado+Federal">Deputado Federal</trend>
+    <trend query="Felipe+Neto" url="http://search.twitter.com/search?q=Felipe+Neto">Felipe Neto</trend>
+    <trend query="%23passione" url="http://search.twitter.com/search?q=%23passione">#passione</trend>
+  </trends>
+</matching_trends>
